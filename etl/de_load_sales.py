@@ -17,45 +17,47 @@ except NameError:
 
 # DBTITLE 1,Define main function
 def main():
-
-    orders_df   = spark.read.table("ecom.sales.order")
-    customer_df = spark.read.table("ecom.sales.customer")
-    products_df = spark.read.table("ecom.sales.product")
-    
-    sales_df = orders_df \
-        .join(
-            customer_df.withColumnRenamed("state", "customer_state"),
-            on="customer_id", how="left"
-        ) \
-        .join(
-            products_df.withColumnRenamed("state", "product_state"),
-            on="product_id", how="left"
-        ) \
-        .select(
-            "order_id",
-            "order_date",
-            "ship_date",
-            "ship_mode",
-            "customer_id",
-            "customer_name",
-            "segment",
-            "country",
-            "city",
-            "customer_state",
-            "product_id",
-            "category",
-            "sub_category",
-            "product_name",
-            "quantity",
-            "price",
-            "discount",
-            "profit"
-        )
-    
-    # Write to target table
-    write_table(spark, sales_df, "ecom.sales.sales")
-    
-    return "Sales data loaded successfully"
+    try:
+        orders_df   = spark.read.table("ecom.sales.order")
+        customer_df = spark.read.table("ecom.sales.customer")
+        products_df = spark.read.table("ecom.sales.product")
+        
+        sales_df = orders_df \
+            .join(
+                customer_df.withColumnRenamed("state", "customer_state"),
+                on="customer_id", how="left"
+            ) \
+            .join(
+                products_df.withColumnRenamed("state", "product_state"),
+                on="product_id", how="left"
+            ) \
+            .select(
+                "order_id",
+                "order_date",
+                "ship_date",
+                "ship_mode",
+                "customer_id",
+                "customer_name",
+                "segment",
+                "country",
+                "city",
+                "customer_state",
+                "product_id",
+                "category",
+                "sub_category",
+                "product_name",
+                "quantity",
+                "price",
+                "discount",
+                "profit"
+            )
+        
+        # Write to target table
+        write_table(spark, sales_df, "ecom.sales.sales")
+        
+        return "Sales data loaded successfully"
+    except Exception as e:
+        return f"Error loading sales data: {str(e)}"
 
 # COMMAND ----------
 
