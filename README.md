@@ -26,7 +26,3 @@ Write comprehensive test cases to cover different scenarios and edge cases.
 Ensure your solution handles data quality issues and implements robust error-handling mechanisms.
 Document your code and assumptions clearly to make it understandable for others.
 Consider performance implications and optimize your code for efficiency and scalability.
-
-Key Note:
-
-Please upload your files collectively, ensure all your files are attached before you submit the test.
