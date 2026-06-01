@@ -1,0 +1,67 @@
+The Purpose of the document is to explain how the below given e-commerce Sales Data Processing has been handled via databricks notebooks.
+
+1.Create raw tables for each source dataset
+2.Create an enriched table for customers and products
+3.Create an enriched table which has 1. order information 1. Profit rounded to 2 decimal places 2. Customer name and country 3. Product category and sub category
+4.Create an aggregate table that shows profit by 1. Year 2. Product Category 3. Product Sub Category 4. Customer
+5.Using SQL output the following aggregates
+    1. Profit by Year
+    2. Profit by Year + Product Category
+    3. Profit by Customer
+    4. Profit by Customer + Year
+
+  
+Solution:
+  The above tasks has been handled using dedicated etl framework that can be re-used to cover the usecases.
+
+etl
+  -> comprise of de_load_sales and dt_load_sales
+  -----> de_load_* used to perform the ingestion operation with minimal data transformation to obtain the master table i.e, ecom.sales.sales 
+  -----> dt_load_* used to perform the transformation, with which the enriched and the aggregated tables has been achieved using the transformation along with the given use cases.
+  -----> sql_queries.sql - consist of the Sql query used to produce the output as per the required need.
+
+src
+  -> consists of the source dataset provided on the input to ingest or load
+
+test
+  -> is the Unit test files for the main business use case
+  ------> Since creating sales table from the source or handling the requested ask usually consist of functional requirement with core values, hence that files are needed to be performed with the Test driven approach.
+  ------> conftest file to initiate the python test, with spark fixtures since this requires a local session to pull the unit test into a locakl environment.
+
+utils
+  -> consists of the utility file that has the read and write utilityy which has been re-used on this elt process time-to-time.
+  -> de_load_file consists of one time ingestion of all the source datasets into the table.
+  -> resource
+    ---> this folder holds the ddl which will store the dynamics of the tables available in the catalog, can be used for ddl operations.
+
+
+Step-by-step instruction for the execution:
+  1. Run the ddl.py files first to create the table skeleton required for this project
+  2. Execute the de_load_file.py fil to ingest all the given inputs to be ingested into the dimension (customer, product) and fact table (order).
+  3. Run the de_load_sales.py file to load the ecom.sales.sales table which is the master table (denormalized) which comprise of one source of truth for this ecommerce datasets.
+  4. Run the dt_load_sales.py file to load the transformed tables with which the enriched and aggregated tables can be ingested in ecom.sales.enriched and econ.sales.aggregate tables for the final results.
+
+
+Sample:
+ecom.sales.aggregate
+  
+order_year	category	sub_category	total_profit	order_count
+2014	Furniture	Bookcases	-404.9	37
+2014	Furniture	Chairs	6974.8	124
+2014	Furniture	Furnishings	-8626.89	165
+2014	Furniture	Tables	-3117.66	63
+2014	Office Supplies	Appliances	2455.5	89
+2014	Office Supplies	Art	1404.2	150
+2014	Office Supplies	Binders	4534.44	256
+2014	Office Supplies	Envelopes	1215.01	39
+2014	Office Supplies	Fasteners	130.36	38
+
+
+ecom.sales.enriched
+customer_name	order_year	total_profit	order_count
+Adam Bellavance	2015	8.71	1
+Adam Bellavance	2016	1643.6	3
+Adam Bellavance	2017	477.84	4
+Cari Sayre	2014	-13.9	1
+Cari Sayre	2015	-5.73	2
+Cari Sayre	2017	205.18	2
